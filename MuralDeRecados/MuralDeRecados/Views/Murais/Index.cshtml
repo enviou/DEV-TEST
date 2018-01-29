@@ -1,0 +1,104 @@
+﻿@using MuralDeRecados.Models
+
+@model IEnumerable<MuralDeRecados.Models.Mural>
+
+@{
+    Layout = "~/Views/Shared/_LayoutPadrao.cshtml";
+    ViewBag.Title = "Mural de Recados";
+}
+
+<h2>Mural</h2>
+
+<div id="panelUsuario" style="margin-bottom: 12px;">
+    @{
+        if (Session["usuarioLogado"] != null)
+        {
+            var usuario = (Usuario)Session["usuarioLogado"];
+            <h4 class="@ViewBag.Ocultar">Olá, @usuario.Nome | @Html.ActionLink("Sair", "Logoff", "Home", null, new {  })</h4>
+        }
+        else
+        {
+            @Html.ActionLink("Fazer login", "Login", "Home", null, new { @class = "btn btn-primary" })
+        }
+    }
+</div>
+
+<div class="row @ViewBag.Ocultar">
+    <div class="col-md-12">
+        <form id="formMural" name="formMural">
+            <div class="form-horizontal">
+                <div class="row">
+                    <div class="col-md-12">
+                        <textarea class="col-md-12" id="Texto" name="Texto">
+                        </textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" id="btnSalvar" style="margin-top: 11px;margin-bottom: 11px;">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@{ 
+    if (TempData["TipoMsg"] != null)
+    {
+        <div class="row">
+            <div class="col-md-12 @TempData["TipoMsg"].ToString()">
+                @TempData["Msg"].ToString()
+            </div>
+        </div>
+    }
+}
+
+<div class="row @ViewBag.Exibir">
+    <div class="col-md-12">
+        <strong>Nenhuma mensagem cadastrada ainda!</strong>
+    </div>
+</div>
+<div class="row" style="overflow:hidden;max-height:600px;">
+    <div class="col-md-12" id="divPai">
+    @foreach (var item in Model)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <div class="jumbotron" style="margin-bottom: 0;padding-top: 26px;padding-bottom: 26px;">
+                    @string.Format("\"{0}\"", Html.DisplayFor(modelItem => item.Texto));
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <span class="pull-right">@Html.Raw(string.Format("<strong>Postado por:</strong> {0}, <strong>Data/hora:</strong> {1}", Html.DisplayFor(modelItem => item.Usuario.Nome), Html.DisplayFor(modelItem => item.DataCriacao)));</span>
+            </div>
+        </div>
+    }
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#btnSalvar").click(function () {
+            $.ajax({
+                type: 'post',
+                url: 'Murais/Salvar',
+                data: JSON.stringify({ "Texto": $("#Texto").val() }),
+                contentType: "application/json; charset=utf-8",
+                traditional: true,
+                success: function (data) {
+                    if (data.erro) {
+                        alert(data.erro);
+                    }
+                    else {
+                        alert('Mensagem salva com sucesso!');
+                        document.location.reload();
+                    }
+
+                }
+            });
+        });
+    });
+</script>

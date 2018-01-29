@@ -1,0 +1,34 @@
+﻿@using MuralDeRecados.Models
+@model MuralDeRecados.Models.LoginViewModelApp
+
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_LayoutPadrao.cshtml";
+}
+<div id="formUsuario">
+    @using (Html.BeginForm("Login", "Home", FormMethod.Post))
+    {
+        <h2>Login</h2>
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        <div class="form-group">
+            @Html.LabelFor(model => model.Email)
+            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "Email" } })
+            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(u => u.Senha)
+            @Html.EditorFor(a => a.Senha, new { htmlAttributes = new { @class = "form-control", @placeholder = "Senha" } })
+            @Html.ValidationMessageFor(model => model.Senha, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary btn-default" type="submit">Login</button>
+            @Html.ActionLink("Registrar", "NovoUsuario", "Usuario", null, new { @class = "btn btn-default" })
+        </div>
+    }
+    <div class="col-md-4">
+        <section id="socialLoginForm">
+            @Html.Partial("~/Views/Account/_ExternalLoginsListPartial.cshtml", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
+        </section>
+    </div>
+</div>
